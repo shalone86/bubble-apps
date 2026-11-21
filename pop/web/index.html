@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#3a160c">
+<title>Pop Pads</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<canvas id="fizz"></canvas>
+<div id="app">
+  <header id="top">
+    <h1><span class="dot"></span>Pop Pads</h1>
+    <button class="chip" id="kit"><i class="swatch"></i><span></span></button>
+    <button class="chip" id="bpm">92</button>
+    <button class="chip icon" id="menu" aria-label="Menu">☰</button>
+  </header>
+
+  <div id="patterns" role="group" aria-label="Patterns"></div>
+
+  <div id="bar">
+    <div class="seg" role="tablist">
+      <button data-mode="play" class="on">Play</button>
+      <button data-mode="steps">Steps</button>
+    </div>
+    <button class="round" id="metro" aria-label="Metronome" title="Metronome">♩</button>
+    <button class="round" id="rec" aria-label="Record">●</button>
+    <button class="round" id="play" aria-label="Play">▶</button>
+  </div>
+
+  <div id="sounds" hidden></div>
+  <div id="grid" aria-label="Pads"></div>
+  <p id="hint"></p>
+
+  <section id="panel">
+    <div class="tabs" id="tabs" hidden><button data-tab="drum" class="on">Drum</button><button data-tab="mix">Mix</button><span id="lock-note"></span><button class="chip small" id="p-clear">Clear</button><button class="chip small" id="lock-clear" hidden>Clear step</button><button class="chip small on" id="lock-done" hidden>Done</button></div>
+    <div id="fx-panel">
+      <label class="sl"><span>Filter</span><input type="range" data-scope="mix" data-key="filter" min="-100" max="100" value="0"></label>
+      <label class="sl"><span>Drive</span><input type="range" data-scope="mix" data-key="drive" min="0" max="100" value="15"></label>
+      <label class="sl"><span>Crush</span><input type="range" data-scope="mix" data-key="crush" min="0" max="100" value="0"></label>
+      <label class="sl"><span>Reverb</span><input type="range" data-scope="mix" data-key="verb" min="0" max="100" value="0"></label>
+      <label class="sl"><span>Swing</span><input type="range" id="f-swing" min="0" max="100" value="0"></label>
+      <label class="sl"><span>LFO</span><input type="range" data-scope="mix" data-key="lfo" min="0" max="100" value="0"></label>
+      <div class="lfo"><button class="chip small" id="lfo-to"></button><button class="chip small" id="lfo-rate"></button></div>
+    </div>
+    <div id="pad-panel" hidden>
+      <div class="sl pitch"><span>Pitch</span><div class="stepper"><button id="pitch-dn" aria-label="Pitch down">−</button><button id="pitch-val" aria-label="Pitch: tap for semitone steps"><b>Root</b><small>0 semitones</small></button><button id="pitch-up" aria-label="Pitch up">+</button></div><input type="range" data-scope="pad" data-key="pitch" min="-12" max="12" step="1" value="0" hidden></div>
+      <label class="sl"><span>Length</span><input type="range" data-scope="pad" data-key="len" min="4" max="100" value="100"></label>
+      <label class="sl"><span>Filter</span><input type="range" data-scope="pad" data-key="filt" min="-100" max="100" value="0"></label>
+      <label class="sl"><span>Volume</span><input type="range" data-scope="pad" data-key="vol" min="0" max="170" value="85"></label>
+      <label class="sl"><span>Crush</span><input type="range" data-scope="pad" data-key="crush" min="0" max="100" value="0"></label>
+      <label class="sl"><span>LFO</span><input type="range" data-scope="pad" data-key="lfo" min="0" max="100" value="0"></label>
+      <label class="sl"><span>Nudge</span><input type="range" data-scope="pad" data-key="nudge" min="-50" max="50" value="0"></label>
+      <div class="lfo"><button class="chip small" id="p-rep" title="Repeat: hits per step"></button><button class="chip small" id="p-lfo-to"></button></div>
+    </div>
+  </section>
+</div>
+
+<div id="scrim" hidden></div>
+<div id="sheet" hidden role="dialog"><div class="grab" aria-hidden="true"></div><div id="sheet-body"></div></div>
+<div id="toast"></div>
+<div id="tour" hidden role="dialog" aria-label="How Pop Pads works"><video id="tour-video" controls playsinline preload="none"></video><button id="tour-close" class="chip icon" aria-label="Close">✕</button></div>
+
+<div id="start">
+  <div>
+    <div class="logo"><i></i><i></i><i></i></div>
+    <h2>Pop Pads</h2>
+    <p>a fizzy little drum machine</p>
+    <button id="go">pop it open</button>
+    <button id="how-start" class="how">how it works</button>
+    <button id="apk" hidden>put it on your home screen</button>
+  </div>
+</div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

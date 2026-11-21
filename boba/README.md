@@ -1,0 +1,164 @@
+# Boba Beats
+
+Pocket beats made of bubbles. A loop-based beat maker, in the browser, where every
+instrument is played on the same grid of 25 singing bubbles, tuned to a
+five-note scale so nothing you tap can sound wrong.
+
+Tap a loop in, add an instrument, add another, mute and unmute, chain the
+loops into a song, and export a mastered WAV, MP3 or Apple Lossless file.
+Nothing is committed to audio until you export, so a sketch can be tweaked
+as many times as you like, or taken into a DAW as MIDI and stems.
+
+## Play it
+
+Open https://shalonely.com/boba/ on a phone or computer. To keep it like an
+app, use its song menu → "Put it on your home screen"; it then works with no
+signal.
+
+## How it works
+
+**The grid.** Five bubbles across are the five notes of the scale; each row
+up is an octave higher (and a slightly smaller bubble). The key and scale
+apply to every track, and notes are stored as grid positions, so changing key
+or scale later moves the whole song with it.
+
+**Tracks.** Drums, Bass, Pads and Melody to start with, up to eight. Tap a
+mascot to play that track on the grid; tap **on / zzz** under it to mute.
+Long-press a mascot to rename, re-voice or remove the track.
+
+| Instruments | |
+| --- | --- |
+| Keys | E-Piano, Piano, Organ, Music Box, Kalimba |
+| Synths | Synth, Dream Pad, Chiptune |
+| Bass | Bass Guitar, Bass Synth |
+| Ensemble | Choir, Strings, Horns |
+| Drums | 25 finger-drumming pads: 2 kicks, 3 snares, 3 closed hats, open hat, clap, 5 toms, ride, crash, 2 shakers, tambourine, rain drum, rim, cowbell, pop, sparkle |
+
+**Chords.** On any melodic track, switch **Chords** to Triad, 7th, Dreamy,
+Power or Stack and each bubble plays a whole chord built from the song's key.
+
+**Looping.** Press the pink button: after a one-bar count-in, whatever you
+play is recorded into the loop and keeps going round. Switch track and keep
+adding. Notes snap to 16ths by default (change it under the tempo button).
+**Undo** takes back one pass at a time. **Steps** opens a 16-step editor for
+the last bubble you touched; **Erase** wipes a bubble's notes with a tap.
+
+**Grooves.** On the drum track, **Grooves** drops in one of 14 preset
+patterns to play over or edit.
+
+**Sections.** A, B, C… are different loops in the same song. Tap one while
+playing and it takes over at the next bar line. Long-press to copy or clear.
+
+**FX.** Eight hold-to-play effects, on the whole mix or one track, on the FX tab: Cloud (reverb), Echo
+(delay), Squish (compressor), Crunch (distortion), Stutter, Glitch, Dive
+(filter) and Sleepy (tape stop). Slide across Stutter and Dive to change
+their setting. Hold one while recording to keep the move in the loop; tap the
+lock to leave one switched on.
+
+**Song mode.** The Song tab is a matrix: each column is a block of the song
+(which section, how many times), each row a track. Tap a bubble to rest or
+wake that track for that block. Play runs the song from the selected block.
+
+**Sampler.** Choose Sampler as a track's instrument, then record with the
+microphone or import a file (up to 12 s). Keyboard mode tunes the sound and
+spreads it across the bubbles; Kit mode puts a different sound on each
+bubble. In keyboard mode, Natural pitch keeps the sound's formants where they
+were, so a voice moved up stays a voice instead of a chipmunk; the Formant
+control slides them on purpose (lower is bigger and darker). Notes are
+prepared in the background; until one is ready it plays the classic way.
+
+**Kit mode, quickly.** In kit mode, hold an empty bubble to record straight
+into it (let go to keep it), and hold a filled one to open its sampler menu.
+"Chop a file across the bubbles" cuts a recording at its hits, one per
+bubble from the bottom left.
+
+**Tutorial.** A 90-second video of building a song is offered on the start
+screen on a first visit and kept under "How it works" in the song menu. It is
+filmed from the real app by `tools/make-tutorial.mjs`, with a spoken line per
+step (Aura-2 voice via the readaloud Worker; clips are kept in
+`tools/tutorial-voice/`). Re-run it after changing the interface.
+
+**Export.** WAV, Apple Lossless (.m4a), MP3, MIDI, stems (one WAV per
+track) or an instrument pack. Exports go through a mastering chain in the
+same order as a typical Ozone chain: tape saturation, a tonal-balance
+stabiliser, three-band dynamics with transient control, a stereo imager
+(mono bass, wider highs), a glue compressor and a maximizer held under a
+-1 dBTP true-peak ceiling. Presets: Pop and Punchy (-8 LUFS), Loud (-6.5),
+Cozy (-10) and Streaming (-14). If a target would need more limiting than
+the preset allows, it stops a little short rather than crush the song. A
+seamless loop is mastered as if it were already looping, so it still joins
+cleanly in a DAW.
+
+## Layout
+
+```
+boba/
+  web/        the whole app: plain HTML, CSS and ES modules, no build step
+    js/         theory, instruments, drums, graph (FX + mastering), engine,
+                seq, render, state, exporter, platform
+    js/codec/   WAV, Apple Lossless, MIDI, ZIP/SFZ writers; mastering; export worker
+    js/ui/      the interface
+    vendor/     lamejs (MP3 encoder, LGPL)
+  tests/      sound, codec and end-to-end tests
+```
+
+## Run it in a browser
+
+The app is a static site. Any web server will do:
+
+```sh
+cd boba/web && python3 -m http.server 8000
+# open http://localhost:8000 (Chrome works best; use the phone toolbar)
+```
+
+## Share it as a web app
+
+`web/` is a complete installable web app (a manifest, icons and an offline
+copy kept by `sw.js`), so it can be shared as a link with no store involved.
+Host the folder anywhere that serves https: itch.io (upload a zip of `web/`
+as an HTML game), GitHub Pages, Netlify, or Cloudflare (below). Visitors can use it in the browser or
+choose "Add to Home Screen" / "Install app" for a full-screen app that works
+offline.
+
+After changing anything in `web/`, run `node boba/tools/make-web.mjs` so
+installed copies pick up the new version (the tests fail if you forget).
+
+### On shalonely.com/boba (Cloudflare)
+
+`cloudflare/` deploys the app as a Worker routed to `shalonely.com/boba`
+only, leaving the rest of the domain alone. The app's files are bundled into
+the Worker script, so the only thing deploying needs is an API token with
+the "Edit Cloudflare Workers" permissions:
+
+```sh
+cd boba/cloudflare
+npm install
+node build.mjs
+CLOUDFLARE_API_TOKEN=... npx wrangler deploy
+```
+
+## Tests
+
+Needs Node 20+, ffmpeg, and Playwright with Chromium.
+
+```sh
+node boba/tests/codec.test.mjs    # encoders, checked against ffmpeg
+node boba/tests/sounds.test.mjs   # every instrument and drum pad
+node boba/tests/app.test.mjs      # the app end to end, at phone size
+```
+
+`codec.test.mjs` decodes every exported format with ffmpeg: WAV and Apple
+Lossless must come back bit-for-bit, and the loudness meter must agree with
+ffmpeg's EBU R128 reading.
+
+## Credits
+
+- Type: [Fredoka](https://github.com/hafontia/Fredoka-One), SIL Open Font License.
+- MP3 encoding: [lamejs](https://github.com/shijinyu/lamejs), LGPL.
+- All sounds are synthesised in the app; there are no samples.
+
+## Names
+
+The app was first called Bubbloop. Its storage keys and the `bubbloop` name
+inside the code keep that name on purpose: changing them would leave saved
+songs behind. Everything a person sees says Boba Beats.
